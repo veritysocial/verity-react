@@ -4,7 +4,7 @@ import { Textarea } from '@/components/ui/textarea';
 
 export default function Home() {
   return (
-    <main className="dark bg-background min-h-screen w-full pt-8">
+    <main className="min-h-screen w-full pt-8">
       <Card className="border-primary mx-auto w-11/12 rounded-lg md:w-1/2">
         <CardHeader>
           <CardTitle>Create Post</CardTitle>
