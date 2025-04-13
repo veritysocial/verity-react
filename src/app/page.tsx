@@ -1,8 +1,12 @@
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import Post from '@/components/post';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { db } from '@/lib/db';
+import { posts } from '@/lib/db/schema';
 
-export default function Home() {
+export default async function Home() {
+  const allPosts = await db.select().from(posts);
   return (
     <main className="min-h-screen w-full pt-8">
       <Card className="border-primary mx-auto w-11/12 rounded-lg md:w-1/2">
@@ -21,6 +25,21 @@ export default function Home() {
           </Button>
         </CardFooter>
       </Card>
+      <div className="mt-8 flex flex-col gap-4 pb-8">
+        {allPosts.map((post) => (
+          <Post
+            key={post.id}
+            post={{
+              createdAt: new Date(post.createdAt),
+              content: post.content,
+              id: post.id,
+              username: 'hi',
+              image: '/favicon.ico',
+              framework: post.framework,
+            }}
+          />
+        ))}
+      </div>
     </main>
   );
 }
