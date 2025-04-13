@@ -1,55 +1,54 @@
+'use client';
+
+import { TPostClient } from '@/lib/db/schema';
+import { useState, useEffect } from 'react';
+import { ofetch } from 'ofetch';
 import Post from '@/components/post';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { db } from '@/lib/db';
-import { posts } from '@/lib/db/schema';
-import { clerkClient } from '@clerk/nextjs/server';
-import { SignedIn } from '@clerk/nextjs';
-import { createPost } from '@/app/actions';
-import { desc } from 'drizzle-orm';
+import PostForm from '@/components/postForm';
+import { socket } from '@/components/socket';
 
-const ctx = await clerkClient();
+export default function Home() {
+  const [storedPosts, setStoredPosts] = useState<TPostClient[]>([]);
+  const [localPosts, setLocalPosts] = useState<TPostClient[]>([]);
 
-export default async function Home() {
-  const allPosts = await db.select().from(posts).orderBy(desc(posts.createdAt));
+  useEffect(() => {
+    async function fetchData() {
+      const result = await ofetch('/api/getPosts');
+      setStoredPosts(result);
+    }
+    fetchData();
+  }, []);
+
+  socket.on('post', async (e: TPostClient) => {
+    console.debug(e);
+    setLocalPosts([e, ...localPosts]);
+  });
+
   return (
-    <main className="min-h-screen w-full pt-8">
-      <SignedIn>
-        <form action={createPost}>
-          <Card className="border-primary mx-auto w-11/12 rounded-lg md:w-1/2">
-            <CardHeader>
-              <CardTitle>Create Post</CardTitle>
-              <CardDescription>
-                Posting from Verity <span className="font-bold text-[#66DBFB]">React</span>
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea name="content" id="content" placeholder="Share your thoughts with the world!" />
-            </CardContent>
-            <CardFooter>
-              <Button type="submit" className="cursor-pointer">
-                Post!
-              </Button>
-            </CardFooter>
-          </Card>
-        </form>
-      </SignedIn>
+    <main className="pt-8">
+      <PostForm />
       <div className="mt-8 flex flex-col gap-4 pb-8">
-        {allPosts.map(async (post) => {
-          const user = await ctx.users.getUser(post.user);
+        {/* Posts from the websocket */}
+        {localPosts.map((post) => (
+          <Post
+            post={{
+              ...post,
+              createdAt: new Date(post.createdAt),
+            }}
+            key={post.id}
+          />
+        ))}
 
-          return (
-            <Post
-              key={post.id}
-              post={{
-                ...post,
-                username: user.username!,
-                image: user.imageUrl,
-              }}
-            />
-          );
-        })}
+        {/* Posts grabbed on load */}
+        {storedPosts.map((post) => (
+          <Post
+            post={{
+              ...post,
+              createdAt: new Date(post.createdAt),
+            }}
+            key={post.id}
+          />
+        ))}
       </div>
     </main>
   );
