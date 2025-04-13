@@ -1,6 +1,9 @@
+import { useClerkAppearance } from '@/lib/useClerkAppearance';
+import { ClerkProvider, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { buttonVariants } from '@/components/ui/button';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -25,10 +28,32 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} dark bg-background antialiased`}>
-        {children}
-      </body>
-    </html>
+    <ClerkProvider appearance={useClerkAppearance()}>
+      <html lang="en">
+        <body className={`${geistSans.variable} ${geistMono.variable} dark bg-background antialiased`}>
+          <header className="absolute top-4 left-4">
+            <SignedOut>
+              <SignUpButton mode="modal" appearance={useClerkAppearance()}>
+                <div className={`${buttonVariants({ variant: 'default' })} cursor-pointer`}>Sign Up</div>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton
+                appearance={{
+                  ...useClerkAppearance(),
+                  elements: {
+                    userButtonAvatarBox: {
+                      height: '48px',
+                      width: '48px',
+                    },
+                  },
+                }}
+              />
+            </SignedIn>
+          </header>
+          <div>{children}</div>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }
