@@ -6,30 +6,34 @@ import { db } from '@/lib/db';
 import { posts } from '@/lib/db/schema';
 import { clerkClient } from '@clerk/nextjs/server';
 import { SignedIn } from '@clerk/nextjs';
+import { createPost } from '@/app/actions';
+import { desc } from 'drizzle-orm';
 
 const ctx = await clerkClient();
 
 export default async function Home() {
-  const allPosts = await db.select().from(posts);
+  const allPosts = await db.select().from(posts).orderBy(desc(posts.createdAt));
   return (
     <main className="min-h-screen w-full pt-8">
       <SignedIn>
-        <Card className="border-primary mx-auto w-11/12 rounded-lg md:w-1/2">
-          <CardHeader>
-            <CardTitle>Create Post</CardTitle>
-            <CardDescription>
-              Posting from Verity <span className="font-bold text-[#66DBFB]">React</span>
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Textarea name="content" id="content" placeholder="Share your thoughts with the world!" />
-          </CardContent>
-          <CardFooter>
-            <Button type="submit" className="cursor-pointer">
-              Post!
-            </Button>
-          </CardFooter>
-        </Card>
+        <form action={createPost}>
+          <Card className="border-primary mx-auto w-11/12 rounded-lg md:w-1/2">
+            <CardHeader>
+              <CardTitle>Create Post</CardTitle>
+              <CardDescription>
+                Posting from Verity <span className="font-bold text-[#66DBFB]">React</span>
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Textarea name="content" id="content" placeholder="Share your thoughts with the world!" />
+            </CardContent>
+            <CardFooter>
+              <Button type="submit" className="cursor-pointer">
+                Post!
+              </Button>
+            </CardFooter>
+          </Card>
+        </form>
       </SignedIn>
       <div className="mt-8 flex flex-col gap-4 pb-8">
         {allPosts.map(async (post) => {
