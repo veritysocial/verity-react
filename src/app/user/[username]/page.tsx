@@ -6,6 +6,16 @@ import { posts } from '@/lib/db/schema';
 import { desc, eq } from 'drizzle-orm';
 import { clerkClient } from '@clerk/nextjs/server';
 import Post from '@/components/post';
+import type { Metadata } from 'next';
+
+export async function generateMetadata({ params }: { params: { username: string } }): Promise<Metadata> {
+  return {
+    title: `Verity (React Edition) | @${params.username}`,
+    description:
+      'Verify (Vertical + Community) is a project built by April Hall to try out a bunch of' +
+      ' different javascript frameworks by making the same app in 5 of them',
+  };
+}
 
 export default async function UserPage({ params }: { params: Promise<{ username: string }> }) {
   const ctx = await clerkClient();
