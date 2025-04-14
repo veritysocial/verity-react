@@ -1,6 +1,7 @@
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import type { TPostClient } from '@/lib/db/schema';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const frameWorkColors = {
   svelte: 'text-[#FF3E00]',
@@ -23,9 +24,9 @@ export default function Post({ post }: { post: TPostClient }) {
             height={20}
           />
           <div>
-            <a href={`/user/${post.username}`} className="font-bold">
+            <Link href={`/user/${post.username}`} className="font-bold">
               @{post.username}
-            </a>
+            </Link>
             <span className="text-muted-foreground"> on Verity </span>
             <span className={`${frameWorkColors[post.framework]} font-bold`}>
               {post.framework.charAt(0).toUpperCase() + post.framework.slice(1)}
