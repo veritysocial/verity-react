@@ -8,9 +8,11 @@ import { clerkClient } from '@clerk/nextjs/server';
 import Post from '@/components/post';
 import type { Metadata } from 'next';
 
-export async function generateMetadata({ params }: { params: { username: string } }): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ username: string }> }): Promise<Metadata> {
+  const { username } = await params;
+
   return {
-    title: `Verity (React Edition) | @${params.username}`,
+    title: `Verity (React Edition) | @${username}`,
     description:
       'Verify (Vertical + Community) is a project built by April Hall to try out a bunch of' +
       ' different javascript frameworks by making the same app in 5 of them',
@@ -19,7 +21,7 @@ export async function generateMetadata({ params }: { params: { username: string 
 
 export default async function UserPage({ params }: { params: Promise<{ username: string }> }) {
   const ctx = await clerkClient();
-  const username = (await params).username;
+  const { username } = await params;
 
   const user = (
     await ctx.users.getUserList({
