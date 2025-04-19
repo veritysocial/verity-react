@@ -2,7 +2,7 @@ import { useClerkAppearance } from '@/lib/useClerkAppearance';
 import { ClerkProvider, SignUpButton, SignedIn, SignedOut, UserButton } from '@clerk/nextjs';
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
-import './globals.css';
+import '@/styles/globals.css';
 import { buttonVariants } from '@/components/ui/button';
 import Link from 'next/link';
 import VerityLogo from '@/components/verityLogo';
