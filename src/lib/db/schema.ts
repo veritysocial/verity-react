@@ -1,6 +1,6 @@
 import { pgTable, text, timestamp, varchar } from 'drizzle-orm/pg-core';
 
-type framework = 'angular' | 'react' | 'solid' | 'svelte' | 'vue';
+type framework = 'react' | 'solid' | 'svelte' | 'vue';
 export const posts = pgTable('posts', {
   user: text('user').notNull(), // Clerk User ID
   id: varchar('id', { length: 36 }).primaryKey(), // Post ID (UUIDv4)
